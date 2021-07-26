@@ -64,6 +64,12 @@ def handle_product(id):
         except IndexError:
            return make_response(jsonify(status = 'error',message='No found product')),404
 
+
+@app.route('/products/price/<int:id>', methods=['GET'])
+def get_prodcut_by_price(id):
+    results = {'price' : id}
+    return make_response(jsonify(products = results)),200
+
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD
     app.run(debug=True)
