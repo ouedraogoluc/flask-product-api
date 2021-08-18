@@ -15,18 +15,18 @@ class Product(db.Model):
     price = db.Column(db.Float(8,2), nullable=False)
     content = db.Column(db.Text, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    image_url = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.Text, nullable=True)
     
     # formatte l'affichage
     def __repr__(self):
         return '<Product {} {} {}>'.format(self.id, self.name, self.price)
 
     #json object 
-    def json():
+    def json(self):
         return {
             "id":self.id,
             "name":self.name, 
-            "price":self.price, 
+            "price":int(self.price), 
             "content":self.content, 
             "quantity":self.quantity,
             "image_url":self.image_url 

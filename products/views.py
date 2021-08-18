@@ -7,6 +7,8 @@ app = Flask(__name__)
 # configuration de la base de donnee
 app.config.from_object('config')
 
+#importer le controller
+from products.controllers import ProductContoller
 
 # route principale
 @app.route('/')
@@ -19,64 +21,30 @@ def index():
 @app.route('/products')
 @cross_origin()
 def get_all_products():
-   return make_response(jsonify(products = products,total = len(products)))
+   return ProductContoller.index()
 
 #route pour ajouter un produit
 @app.route('/products/create', methods=['POST'])
 @cross_origin()
 def create_product():
-    #recuperer les donnees json
-    data = request.get_json()
-    #creer un produit
-    product = {
-        'name' : data['name'],
-        'price' : data['price'],
-        'content' : data['content'],
-        'quantity' : data['quantity'],
-    }
-    #ajouter le produits dans le tableau
-    products.append(product)
-    #retourne la response
-    return make_response(jsonify(status= 'success', message='Product successfully created', product=product)),201
+    return ProductContoller.store(request)
 
 @app.route('/products/<int:id>', methods=['GET','PUT','DELETE'])
 @cross_origin()
 def handle_product(id):
-   if request.method == 'GET':
+    if request.method == 'GET':
        print(request.method)
-       try:
-           #recuperer le produit correspond
-           product = products[id - 1]
-           return make_response(jsonify(product= product)),200
-       except IndexError:
-           return make_response(jsonify(status = 'error',message='No found product')),404
+       return ProductContoller.show(id)
+
+    elif request.method == 'PUT':
+       return ProductContoller.update(id, request)
    
-   elif request.method == 'PUT':
-        #recuperer le element correspondant
-        try:
-            data = request.get_json()
-            product = products[int(data['id'])]
-            product['name'] = data['name']
-            product['price'] = data['price']
-            product['content'] = data['content']
-            product['quantity'] = data['quantity']
-            return make_response(jsonify(status= 'success', message='Product successfully updated', product=product)),200
-        except IndexError:
-           return make_response(jsonify(status = 'error',message='No found product')),404
-   
-   elif request.method == 'DELETE':
-        #recuperer le element correspondant
-        try:
-            data = request.get_json()
-            products.pop(int(data['id']) -1 )
-            return make_response(jsonify(status= 'success', message='Product successfully deleted', products=products)),200
-        except IndexError:
-           return make_response(jsonify(status = 'error',message='No found product')),404
+    elif request.method == 'DELETE':
+        return ProductContoller.delete(id)
 
 
-@app.route('/products/price/<int:id>', methods=['GET'])
+@app.route('/products/price/<int:price>', methods=['GET'])
 @cross_origin()
-def get_prodcut_by_price(id):
-    results = {'price' : id}
-    return make_response(jsonify(products = results)),200
+def get_prodcut_price(price):
+    return ProductContoller.get_prodcut_by_price(price)
 
