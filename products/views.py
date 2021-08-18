@@ -1,12 +1,14 @@
 from flask import Flask, jsonify , request , make_response
 from flask_cors import cross_origin
 
+# create app
 app = Flask(__name__)
 
-from data import products
+# configuration de la base de donnee
+app.config.from_object('config')
 
-#route principale
 
+# route principale
 @app.route('/')
 @cross_origin()
 def index():
@@ -78,6 +80,3 @@ def get_prodcut_by_price(id):
     results = {'price' : id}
     return make_response(jsonify(products = results)),200
 
-if __name__ == '__main__':
-    #DEBUG is SET to TRUE. CHANGE FOR PROD
-    app.run(debug=True)
