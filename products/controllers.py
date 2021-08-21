@@ -1,5 +1,9 @@
 from flask import make_response, jsonify
 from products.models import Product , db
+from products.utils import *
+import json, os
+from products.views import app
+from werkzeug.datastructures import ImmutableMultiDict
 
 #create product controller class
 class ProductContoller:
@@ -24,6 +28,7 @@ class ProductContoller:
     def store(request):
         #recuperer les donnees json
         data = request.get_json()
+
         #creer un produit
         name = data['name'],
         price = data['price'],
@@ -74,7 +79,48 @@ class ProductContoller:
         else:
               return make_response(jsonify(products= [p.json() for p in products],count=len(products))),200
 
-      
+    # add image to product
+    def upload_product_image(request):
+        
+        # check if the post request has the file part
+        if 'image' not in request.files:
+            return make_response(jsonify(message='No file part in the request',status='failed')),400
+        
+        # get file    
+        file = request.files['image']
+   
+        # check filename
+        if file.filename == '':
+            return make_response(jsonify(message='No file selected for uploading',status='failed')),400
+        
+        # file and allow
+        if file and allowed_file(file.filename):
+            # secure filename
+            filename = secure_filename(file.filename)
+            # save file
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # generate image_url
+            image_url = request.url_root + url_for('get_product_image', filename=filename)
+
+            # get json data
+            data = request.form.get('product_id')
+            
+            print(data)
+            # retrieve data
+            product_update = Product.query.get(data)
+
+            if product_update:
+                # update
+                product_update.image_url = image_url
+                db.session.commit()
+                return make_response(jsonify(message="Image successfully uploaded", status="success", image_uri=image_url)),200
+            else:
+                return make_response(jsonify(message='Product no found',  status='failed')),400
+        else:
+            return make_response(jsonify(message='Allowed file types are png, jpg, jpeg',status='failed')),400
+        
+
+
         
 
         
