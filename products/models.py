@@ -1,7 +1,7 @@
 # import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
 from products.views import app
-
+from werkzeug.security import generate_password_hash
 # create database connexion
 db = SQLAlchemy(app)
 
@@ -31,3 +31,36 @@ class Product(db.Model):
             "quantity":self.quantity,
             "image_url":self.image_url 
             }
+#create user classe
+class User(db.Model):
+    """Model for user accounts."""
+    __tablename__ = 'users'
+#create field
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String,nullable=False)
+    last_name = db.Column(db.String,nullable=False)
+    email = db.Column(db.String(40),unique=True, nullable=False)
+    password = db.Column(db.String(200),nullable=False)
+    type = db.Column(db.String,nullable=False)
+    #formate affichage
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
+     #json object 
+    def json(self):
+        return {
+            "id":self.id,
+            
+            "first_name":self.first_name,  
+            "last_name":self.last_name,  
+            "email":self.email, 
+            "password":self.password, 
+            "type":self.type,
+            }
+
+def create_default_user():
+    new_user = User(type="admin",first_name="luc",last_name="ouedraogo", email="luc@gmail.com", password=generate_password_hash("admin"))
+    # ajouter en base 
+    db.session.add(new_user)
+    db.session.commit()
+
+
