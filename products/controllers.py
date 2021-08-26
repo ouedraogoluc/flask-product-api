@@ -119,7 +119,16 @@ class ProductContoller:
         else:
             return make_response(jsonify(message='Allowed file types are png, jpg, jpeg',status='failed')),400
         
-
+    def delete_all_product():
+        # get all products
+        products = Product.query.all()
+        # delete all produit
+        for product in products:
+            db.session.delete(product)
+            db.session.commit()
+        
+        return make_response(jsonify(message="All products successfully deleted", status="success")),200
+       
 
         
 

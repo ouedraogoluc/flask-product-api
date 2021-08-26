@@ -72,5 +72,9 @@ def get_product_image(filename):
     print(request.url_root + url_for('get_product_image', filename=filename))
     extension = filename.split('.')[1]
     # get full path
-    file_path = '..\\..\\static\\uploads\\'+ filename
+    file_path = '..//static//uploads//'+ filename
     return send_file(file_path, mimetype='image/'+ extension)
+
+@app.route('/products/delete', methods=['DELETE'])
+def delete_all_product():
+    return ProductContoller.delete_all_product()

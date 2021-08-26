@@ -8,3 +8,7 @@
 >>> Product.query.all()
 [<Product 1 Televion Samsung HD 260000.0000000000>]
 >>> products = Product.query.all()
+
+@app.route('/products/delete', methods=['DELETE'])
+def delete_all_product():
+    return ProductContoller.delete_all_product()
