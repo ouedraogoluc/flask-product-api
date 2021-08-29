@@ -1,3 +1,4 @@
+from re import I
 from flask import url_for
 from werkzeug.utils import secure_filename
 
@@ -9,3 +10,16 @@ def allowed_file(filename):
 
 def generate_image_url(uploaded_image):
     return url_for('send_uploaded_file', filename=uploaded_image)
+
+def check_user_type(type):
+    if type=='developper':
+        return type
+
+    elif type=='seller' or type=='admin':
+        return None
+
+def generate_image(identifiant: str) -> str:    
+    return 'https://i.pravatar.cc/150?u='+identifiant[0]
+
+
+        
